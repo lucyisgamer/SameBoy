@@ -8,6 +8,7 @@ typedef struct {
         GB_MBC1,
         GB_MBC2,
         GB_MBC3,
+        GB_MBC3000,
         GB_MBC5,
         GB_MBC7,
         GB_MMM01,

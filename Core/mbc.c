@@ -26,6 +26,7 @@ const GB_cartridge_t GB_cart_defs[256] = {
     {  GB_MBC3  , false, false, false, false}, // 11h  MBC3
     {  GB_MBC3  , true , false, false, false}, // 12h  MBC3+RAM
     {  GB_MBC3  , true , true , false, false}, // 13h  MBC3+RAM+BATTERY
+    {  GB_MBC3000, true, true , true , false}, // 14h  MBC3000+RAM+BATTERY+TIMER
     [0x19] =
     {  GB_MBC5  , false, false, false, false}, // 19h  MBC5
     {  GB_MBC5  , true , false, false, false}, // 1Ah  MBC5+RAM
@@ -94,6 +95,10 @@ void GB_update_mbc_mappings(GB_gameboy_t *gb)
             if (gb->mbc_rom_bank == 0) {
                 gb->mbc_rom_bank = 1;
             }
+            break;
+        case GB_MBC3000:
+            gb->mbc_rom_bank = gb->mbc3000.rom_bank_low | (gb->mbc3000.rom_bank_high << 8);
+            gb->mbc_ram_bank = gb->mbc3000.ram_bank;
             break;
         case GB_MBC5:
         case GB_CAMERA:

@@ -447,6 +447,13 @@ struct GB_gameboy_internal_s {
             } mbc3;
 
             struct {
+                uint8_t rom_bank_low:8;
+                uint8_t rom_bank_high:4;
+                uint8_t ram_bank:4;
+                bool rtc_mapped:1;
+            } mbc3000;
+
+            struct {
                 uint8_t rom_bank_low;
                 uint8_t rom_bank_high:1;
                 uint8_t ram_bank:4;

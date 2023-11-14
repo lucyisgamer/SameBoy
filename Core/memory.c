@@ -397,7 +397,7 @@ static uint8_t read_mbc_ram(GB_gameboy_t *gb, uint16_t addr)
     }
     
     if (gb->cartridge_type->has_rtc && gb->cartridge_type->mbc_type != GB_HUC3 &&
-        gb->mbc3.rtc_mapped) {
+        (gb->mbc3.rtc_mapped || gb->mbc3000.rtc_mapped)) {
         /* RTC read */
         if (gb->mbc_ram_bank <= 4) {
             gb->rtc_latched.seconds &= 0x3F;
@@ -849,6 +849,26 @@ static void write_mbc(GB_gameboy_t *gb, uint16_t addr, uint8_t value)
                     break;
             }
             break;
+        case GB_MBC3000:
+            switch (addr & 0xF000) {
+                case 0x0000: 
+                case 0x1000: 
+                    gb->mbc_ram_enable = (value & 0xF) == 0xA; 
+                    break;
+                case 0x2000: 
+                case 0x3000: 
+                    gb->mbc3000.rom_bank_low  = value; 
+                    gb->mbc3000.rom_bank_high = (addr & 0x0F00) >> 8;
+                    gb->mbc3000.ram_bank = (gb->mbc3000.ram_bank & 7) | ((addr & 0x1000) >> 8);
+                    break;
+                case 0x4000: case 0x5000:
+                    gb->mbc3000.ram_bank  = (gb->mbc3000.ram_bank & 8) | (value & 7);
+                    gb->mbc3000.rtc_mapped = value & 8;
+                    break;
+                case 0x6000: case 0x7000:
+                    memcpy(&gb->rtc_latched, &gb->rtc_real, sizeof(gb->rtc_real));
+                    break;
+            }
         case GB_MBC5:
             switch (addr & 0xF000) {
                 case 0x0000: case 0x1000: gb->mbc_ram_enable      = value == 0x0A; break;
@@ -1241,7 +1261,7 @@ static void write_mbc_ram(GB_gameboy_t *gb, uint16_t addr, uint8_t value)
         return;
     }
 
-    if (gb->cartridge_type->has_rtc && gb->mbc3.rtc_mapped) {
+    if (gb->cartridge_type->has_rtc && (gb->mbc3.rtc_mapped || gb->mbc3000.rtc_mapped)) {
         if (gb->mbc_ram_bank <= 4) {
             if (gb->mbc_ram_bank == 0) {
                 gb->rtc_cycles = 0;
