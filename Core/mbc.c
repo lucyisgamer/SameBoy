@@ -99,6 +99,9 @@ void GB_update_mbc_mappings(GB_gameboy_t *gb)
         case GB_MBC3000:
             gb->mbc_rom_bank = gb->mbc3000.rom_bank_low | (gb->mbc3000.rom_bank_high << 8);
             gb->mbc_ram_bank = gb->mbc3000.ram_bank;
+            if ((gb->mbc_rom_bank & 0xFF) == 0) {
+                gb->mbc_rom_bank++;
+            }
             break;
         case GB_MBC5:
         case GB_CAMERA:

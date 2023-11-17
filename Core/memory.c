@@ -869,6 +869,7 @@ static void write_mbc(GB_gameboy_t *gb, uint16_t addr, uint8_t value)
                     memcpy(&gb->rtc_latched, &gb->rtc_real, sizeof(gb->rtc_real));
                     break;
             }
+            break;
         case GB_MBC5:
             switch (addr & 0xF000) {
                 case 0x0000: case 0x1000: gb->mbc_ram_enable      = value == 0x0A; break;
